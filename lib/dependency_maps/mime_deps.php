@@ -5,7 +5,8 @@ require dirname(__FILE__) . '/../mime_types.php';
 Swift_DependencyContainer::getInstance()
     
   -> register('properties.charset')
-  -> asValue('utf-8')
+//  -> asValue('utf-8')
+  -> asValue('iso-2022-jp')
   
   -> register('mime.grammar')
   -> asSharedInstanceOf('Swift_Mime_Grammar')
@@ -14,7 +15,8 @@ Swift_DependencyContainer::getInstance()
   -> asNewInstanceOf('Swift_Mime_SimpleMessage')
   -> withDependencies(array(
     'mime.headerset',
-    'mime.qpcontentencoder',
+//    'mime.qpcontentencoder',
+    'mime.base64contentencoder',
     'cache',
     'mime.grammar',
     'properties.charset'
@@ -24,7 +26,8 @@ Swift_DependencyContainer::getInstance()
   -> asNewInstanceOf('Swift_Mime_MimePart')
   -> withDependencies(array(
     'mime.headerset',
-    'mime.qpcontentencoder',
+//    'mime.qpcontentencoder',
+    'mime.base64contentencoder',
     'cache',
     'mime.grammar',
     'properties.charset'
@@ -53,7 +56,8 @@ Swift_DependencyContainer::getInstance()
   -> register('mime.headerfactory')
   -> asNewInstanceOf('Swift_Mime_SimpleHeaderFactory')
   -> withDependencies(array(
-      'mime.qpheaderencoder',
+      'mime.base64headerencoder',
+//      'mime.qpheaderencoder',
       'mime.rfc2231encoder',
       'mime.grammar',
       'properties.charset'
@@ -62,7 +66,12 @@ Swift_DependencyContainer::getInstance()
   -> register('mime.headerset')
   -> asNewInstanceOf('Swift_Mime_SimpleHeaderSet')
   -> withDependencies(array('mime.headerfactory', 'properties.charset'))
-  
+
+  // added
+  -> register('mime.base64headerencoder')
+  -> asNewInstanceOf('Swift_Mime_HeaderEncoder_Base64HeaderEncoder')
+  -> withDependencies(array('mime.charstream'))
+
   -> register('mime.qpheaderencoder')
   -> asNewInstanceOf('Swift_Mime_HeaderEncoder_QpHeaderEncoder')
   -> withDependencies(array('mime.charstream'))

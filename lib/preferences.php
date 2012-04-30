@@ -7,7 +7,8 @@
 /****************************************************************************/
 
 // Sets the default charset so that setCharset() is not needed elsewhere
-Swift_Preferences::getInstance()->setCharset('utf-8');
+//Swift_Preferences::getInstance()->setCharset('utf-8');
+Swift_Preferences::getInstance()->setCharset('iso-2022-jp');
 
 // Without these lines the default caching mechanism is "array" but this uses a lot of memory.
 // If possible, use a disk cache to enable attaching large attachments etc.

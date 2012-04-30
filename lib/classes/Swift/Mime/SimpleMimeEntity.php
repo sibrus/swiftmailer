@@ -848,5 +848,30 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
         );
     }
   }
-  
+
+  /** Encode charset when charset is not utf-8 */
+  protected function _convertString($string)
+  {
+    $charset = strtolower($this->getCharset());
+    if (!in_array($charset, array('utf-8', 'iso-8859-1', "")))
+    {
+      // mb_convert_encoding must be the first one to check, since iconv cannot convert some words.
+      if (function_exists('mb_convert_encoding'))
+      {
+        $string = mb_convert_encoding($string, $charset, 'utf-8');
+      }
+      else if (function_exists('iconv'))
+      {
+        $string = iconv($charset, 'utf-8//TRANSLIT//IGNORE', $string);
+      }
+      else
+      {
+          throw new Swift_SwiftException('No suitable convert encoding function (use UTF-8 as your 
+harset or install the mbstring or iconv extension).');
+      }
+      return $string;
+    }
+    return $string;
+  }
+
 }
