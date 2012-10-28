@@ -84,10 +84,15 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
    * @return boolean
    * @throws Swift_IoException
    */
-  public function queueMessage(Swift_Mime_Message $message)
+  public function queueMessage(Swift_Mime_Message $message, $mailEventId = null)
   {
     $ser = serialize($message);
-    $fileName=$this->_path.'/'.$this->getRandomString(10);
+    //need the mail event id here
+    if ($mailEventId) {
+    	$fileName=$this->_path.'/'.$mailEventId;
+    } else {
+    	$fileName=$this->_path.'/'.$this->getRandomString(10);
+    }
     for ($i = 0; $i < $this->_retryLimit; ++$i) 
     {
       /* We try an exclusive creation of the file
@@ -153,9 +158,11 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
 
     $failedRecipients = (array) $failedRecipients;
     $count = 0;
+    $response = array();
     $time = time();
     foreach (new DirectoryIterator($this->_path) as $file)
     {
+      $eventId = str_replace('.message', '', $file->getFilename());
       $file = $file->getRealPath();
 
       if (substr($file, -8) != '.message')
@@ -168,8 +175,9 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
       {
         $message = unserialize(file_get_contents($file.'.sending'));
 
-        $count += $transport->send($message, $failedRecipients);
-
+        //change count to an array in format array(eventId => array(0 => messageId))
+        $response[$eventId] = $transport->send($message, $failedRecipients);
+		$count++;
         unlink($file.'.sending');
       }
       else 
@@ -189,7 +197,8 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
       }
     }
 
-    return $count;
+    //this gets returned back to SendEmailCommand
+    return $response;
   }
   
   /**

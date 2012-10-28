@@ -82,7 +82,7 @@ class Swift_Transport_SpoolTransport implements Swift_Transport
    *
    * @return int The number of sent emails
    */
-  public function send(Swift_Mime_Message $message, &$failedRecipients = null)
+  public function send(Swift_Mime_Message $message, &$failedRecipients = null, $mailEventId = null)
   {
     if ($evt = $this->_eventDispatcher->createSendEvent($this, $message))
     {
@@ -92,8 +92,8 @@ class Swift_Transport_SpoolTransport implements Swift_Transport
         return 0;
       }
     }
-    
-    $success = $this->_spool->queueMessage($message);
+    //need event id here
+    $success = $this->_spool->queueMessage($message, $mailEventId);
     
     if ($evt)
     {

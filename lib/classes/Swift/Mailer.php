@@ -15,6 +15,8 @@
  * @package Swift
  * @author Chris Corbyn
  */
+use Zenith\SalonEntityBundle\Entity\MailEvent;
+
 class Swift_Mailer
 {
   
@@ -70,7 +72,7 @@ class Swift_Mailer
    * @param array &$failedRecipients, optional
    * @return int
    */
-  public function send(Swift_Mime_Message $message, &$failedRecipients = null)
+  public function send(Swift_Mime_Message $message, &$failedRecipients = null, $mailEventId = null)
   {
     $failedRecipients = (array) $failedRecipients;
     
@@ -83,7 +85,7 @@ class Swift_Mailer
     
     try
     {
-      $sent = $this->_transport->send($message, $failedRecipients);
+      $sent = $this->_transport->send($message, $failedRecipients, $mailEventId);
     }
     catch (Swift_RfcComplianceException $e)
     {
