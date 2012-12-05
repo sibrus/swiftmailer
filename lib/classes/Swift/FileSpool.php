@@ -175,9 +175,13 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
       {
         $message = unserialize(file_get_contents($file.'.sending'));
 
-        //change count to an array in format array(eventId => array(0 => messageId))
-        $response[$eventId] = $transport->send($message, $failedRecipients);
-		$count++;
+        try {
+            //change count to an array in format array(eventId => array(0 => messageId))
+            $response[$eventId] = $transport->send($message, $failedRecipients);
+            $count++;
+        } catch (Swift_TransportException $ex) {
+        }
+
         unlink($file.'.sending');
       }
       else 
